@@ -2,9 +2,12 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use function Laravel\Prompts\password;
 
+use function Laravel\Prompts\password;
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\GithubController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Profile\AvtarController;
 
@@ -33,7 +36,7 @@ Route::get('/', function () {
     // ]);
     //$user = DB::table('users')->where('id',2)->update(['password'=>'87654321']);
     //$user = DB::table('users')->where('id',3)->delete();
-    
+
     //Eloquent Query
     //$user = User::get();
     //$user = User::all();
@@ -43,7 +46,7 @@ Route::get('/', function () {
     //      'email'=>'mohit@test.com',
     //      'password'=>'1234678'
     // ]);
-    
+
     //$user = User::find(4)->delete();
     //dd($user->name);
 });
@@ -59,4 +62,27 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
+
+Route::get('/auth/callback',[GithubController::class, 'gitcallback'])->name('github.callback');
+
+Route::post('/auth/redirect', function () {
+    return Socialite::driver('github')->redirect();
+})->name('login.github');
+
+// Route::get('/auth/callback', function () {
+//     $user = Socialite::driver('github')->user();
+//     if ($user->email) {
+//         $user = User::firstOrCreate(['email' => $user->email], [
+//             'name' => $user->name,
+//             'password' => 'password',
+//         ]);
+
+//         Auth::login($user);
+//         return redirect('/dashboard');
+//     }
+//     else
+//     {
+//         return redirect('/dashboard');
+//     }
+// });
