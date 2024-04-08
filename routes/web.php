@@ -10,6 +10,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\GithubController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Profile\AvtarController;
+use App\Http\Controllers\TicketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +65,13 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-Route::get('/auth/callback',[GithubController::class, 'gitcallback'])->name('github.callback');
+Route::middleware('auth')->group(function () {
+    Route::resource('/ticket',TicketController::class);
+    //Route::get('/ticket/create', [TicketController::class,'create'])->name('ticket.create');
+    //Route::post('/ticket/create', [TicketController::class,'store'])->name('ticket.store');
+});
+
+Route::get('/auth/callback', [GithubController::class, 'gitcallback'])->name('github.callback');
 
 Route::post('/auth/redirect', function () {
     return Socialite::driver('github')->redirect();
