@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Ticket;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
@@ -18,7 +19,7 @@ class TicketController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $tickets = ($user->isAdmin)?Ticket::latest()->get():$user->tickets;
+        $tickets = ($user->isAdmin) ? Ticket::latest()->get() : $user->tickets;
         //dd($tickets);
         return view('ticket.index', compact('tickets'));
     }
@@ -43,7 +44,7 @@ class TicketController extends Controller
         ]);
 
         if ($request->file('attachment')) {
-            $this->storeAttachment($request,$ticket);
+            $this->storeAttachment($request, $ticket);
         }
         return response()->redirectTo(route('ticket.index'));
     }
@@ -71,15 +72,14 @@ class TicketController extends Controller
     {
         //$ticket->update(['title' => $request->title, 'description' => $request->description]);
         $a = $ticket->update($request->except('attachment'));
-        if($request->has('status'))
-        {
+        if ($request->has('status')) {
             //$user = User::find($ticket->user_id);
             $ticket->user->notify(new ticketUpdatedNotification($ticket));
         }
 
         if ($request->file('attachment')) {
             Storage::disk('public')->delete($ticket->attachment);
-            $this->storeAttachment($request,$ticket);
+            $this->storeAttachment($request, $ticket);
         }
 
         return redirect(route('ticket.index'));
@@ -101,5 +101,25 @@ class TicketController extends Controller
     {
         $ticket->delete();
         return redirect(route('ticket.index'));
+    }
+
+
+    public function setData()
+    {
+        // $tickets = Ticket::orderBy('id', 'desc')->get();
+        // Cache::put('ticket', $tickets, 30);
+        // return $tickets;
+
+        return Cache::remember('ticket',10,function(){
+            return Ticket::orderBy('id', 'desc')->get();
+        });
+    }
+    public function getData()
+    {
+        if (Cache::has('ticket')) {
+            $data = Cache::get('ticket')->whereIn('id', [1, 2, 3]);
+            return $data;
+        }
+        echo "Cache data expired !!!";
     }
 }

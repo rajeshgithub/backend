@@ -11,6 +11,7 @@ use App\Http\Controllers\GithubController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Profile\AvtarController;
 use App\Http\Controllers\TicketController;
+use App\Models\Ticket;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +77,31 @@ Route::get('/auth/callback', [GithubController::class, 'gitcallback'])->name('gi
 Route::post('/auth/redirect', function () {
     return Socialite::driver('github')->redirect();
 })->name('login.github');
+
+Route::get('/setdata',[TicketController::class,'setData']);
+Route::get('/getdata',[TicketController::class,'getData']);
+
+Route::get('/join',function()
+{
+    //$user = User::with('tickets')->get()->toArray();
+    // foreach(User::with('tickets')->get() as $user) //with join result
+    // {
+    //     $tc = $user->tickets->all();
+    //     foreach($tc as $t)
+    //     {
+    //         echo $t->title."<br>";
+    //     }
+    // }
+    
+    /*DB::enableQueryLog(); // enable query log
+    $user = User::query()->where(['name'=>'rajesh','avtar'=>'2'])->get();
+    dd(DB::getQueryLog());*/
+
+    //ToSQL to show query
+    // $user = User::where(['name'=>'rajesh','avtar'=>'2']);
+    // dd($user->toSql());
+
+});
 
 // Route::get('/auth/callback', function () {
 //     $user = Socialite::driver('github')->user();
