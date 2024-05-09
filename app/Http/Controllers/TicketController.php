@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Ticket;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
@@ -101,25 +100,5 @@ class TicketController extends Controller
     {
         $ticket->delete();
         return redirect(route('ticket.index'));
-    }
-
-
-    public function setData()
-    {
-        // $tickets = Ticket::orderBy('id', 'desc')->get();
-        // Cache::put('ticket', $tickets, 30);
-        // return $tickets;
-
-        return Cache::remember('ticket',10,function(){
-            return Ticket::orderBy('id', 'desc')->get();
-        });
-    }
-    public function getData()
-    {
-        if (Cache::has('ticket')) {
-            $data = Cache::get('ticket')->whereIn('id', [1, 2, 3]);
-            return $data;
-        }
-        echo "Cache data expired !!!";
     }
 }

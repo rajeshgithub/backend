@@ -10,7 +10,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\GithubController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Profile\AvtarController;
-use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TestingController;
 use App\Models\Ticket;
 
 /*
@@ -23,6 +23,20 @@ use App\Models\Ticket;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/setdata',[TestingController::class,'setData']);
+Route::get('/getdata',[TestingController::class,'getData']);
+Route::get('/redisdata',[TestingController::class,'redisData']);
+Route::get('/savefile',[TestingController::class,'saveFile']);
+Route::get('/httptest',[TestingController::class,'httpTest']);
+
+Route::get('/testque',[TestingController::class,'testQue']);
+
+Route::get("/sendmail",function()  {
+    $usermail  = "vismay.poonam@gmail.com";
+    dispatch(new \App\Jobs\sendMailJob($usermail));
+    dd("Mail sent successfully !!");
+});
 
 Route::get('/', function () {
     return view('welcome');
@@ -67,9 +81,9 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 
 Route::middleware('auth')->group(function () {
-    Route::resource('/ticket',TicketController::class);
-    //Route::get('/ticket/create', [TicketController::class,'create'])->name('ticket.create');
-    //Route::post('/ticket/create', [TicketController::class,'store'])->name('ticket.store');
+    Route::resource('/ticket',TestingController::class);
+    //Route::get('/ticket/create', [TestingController::class,'create'])->name('ticket.create');
+    //Route::post('/ticket/create', [TestingController::class,'store'])->name('ticket.store');
 });
 
 Route::get('/auth/callback', [GithubController::class, 'gitcallback'])->name('github.callback');
@@ -77,9 +91,6 @@ Route::get('/auth/callback', [GithubController::class, 'gitcallback'])->name('gi
 Route::post('/auth/redirect', function () {
     return Socialite::driver('github')->redirect();
 })->name('login.github');
-
-Route::get('/setdata',[TicketController::class,'setData']);
-Route::get('/getdata',[TicketController::class,'getData']);
 
 Route::get('/join',function()
 {
